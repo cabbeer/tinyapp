@@ -39,30 +39,44 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
-
 app.post("/urls", (req, res) => {
-  
   let newRandomString = generateRandomString();
-  
-
   //this checks if the randomstring is not in the DB before adding it; but the functionality is not complete, it should generate a new random string and then re-try adding it, prolly should use a recursion here?
   if (!urlDatabase[newRandomString]) {
     urlDatabase[newRandomString] = req.body.longURL;
   }
-
-  res.redirect("/urls/" + newRandomString); // did not follow :id method for redirect, is that ok?
+  res.redirect("/urls/" + newRandomString);
 });
 
-
-
+//View individual URL object
 app.get("/urls/:id", (req, res) => {
   console.log(urlDatabase)
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
   res.render("urls_show", templateVars);
 });
 
+//Edit Route
+app.post("/urls/:id", (req, res) => {
+  console.log(urlDatabase);
+  const updateKey = req.params.id;
+  console.log(updateKey);
+  urlDatabase[updateKey] = req.body.longURL;
+
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
+  res.render("urls_show", templateVars);
+});
+
+//Delete Route 
+app.post("/urls/:id/delete", (req, res) => {
+  
+  delete urlDatabase[req.params.id];
+  const templateVars = { urls: urlDatabase };
+  res.render("urls_index", templateVars);
+});
 
 
+
+//Redirect short-url route
 app.get("/u/:id", (req, res) => {
   console.log(req.params.id)
   const longURL = urlDatabase[req.params.id];
@@ -77,9 +91,7 @@ app.get("/u/:id", (req, res) => {
 
 
 
-
-
-
+// Sample rout - can this be deleted?
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
