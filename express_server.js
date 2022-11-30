@@ -15,19 +15,14 @@ const urlDatabase = {
 };
 
 //Functions
-
 function generateRandomString () {
    let rString = '';
    let validChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
    for (let x=0; x < 6; x++) {
     rString += validChars.charAt(Math.floor(Math.random() * validChars.length));
    }
    return rString
 }
-
-generateRandomString();
-
 
 
 //Routing
@@ -44,12 +39,19 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  
+  let newRandomString = generateRandomString();
+  
+
+  //this checks if the randomstring is not in the DB before adding it; but the functionality is not complete, it should generate a new random string and then re-try adding it, prolly should use a recursion here?
+  if (!urlDatabase[newRandomString]) {
+    urlDatabase[newRandomString] = req.body.longURL;
+  }
+
+  res.redirect("/urls/" + newRandomString); // did not follow :id method for redirect, is that ok?
 });
-
-
 
 
 
@@ -60,6 +62,15 @@ app.get("/urls/:id", (req, res) => {
 });
 
 
+
+app.get("/u/:id", (req, res) => {
+  console.log(req.params.id)
+  const longURL = urlDatabase[req.params.id];
+  console.log(urlDatabase)
+  console.log(longURL)
+  // const longURL = ...
+  res.redirect(longURL);
+});
 
 
 
