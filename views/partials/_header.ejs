@@ -13,25 +13,42 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-      <div class="navbar-nav">
+      <div class="navbar-nav" style="margin-right: auto !important;">
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-       
+       </div>
+
         <!-- New user form; Todo: fix styling-->
-        <form method="POST" action="/login" for="username" class="d-flex nav-item" role="search">
-          <input 
-          class="form-control me-2" 
-          type="text" 
-          name="username"
-          placeholder="Username" 
-          aria-label="Search"
-          />
-          <button class="btn btn-primary" type="submit">Submit</button>
-        </form>
+        <% if(username){ %>
+
+          <div class="'navbar-nav">
+            <form method="POST" action="/logout" for="username" class="d-flex nav-item" role="search">
+              <span class="nav-link">Welcome back, <%= username %>!</span>
+              <button class="btn btn-light" type="submit">Logout</button>
+            </form>
+            </div>
+        
+          <% } else{ %>  
+        
+            <div class="'navbar-nav">
+              <form method="POST" action="/login" for="username" class="d-flex nav-item" role="search">
+                <input 
+                class="form-control me-2" 
+                type="text" 
+                name="username"
+                placeholder="Username" 
+                aria-label="Search"
+                />
+                <button class="btn btn-primary" type="submit">Login</button>
+              </form>
+            </div>    
+        
+        <% } %>
       
       </div>
     </div>
   </nav>
 </header>
+
 
 
