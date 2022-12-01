@@ -10,11 +10,27 @@ app.set("view engine", "ejs"); // use ejs templating
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 
-// Database
+// Database (simulated)
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
+
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+};
+
+
+
 
 //Functions
 function generateRandomString () {
@@ -37,11 +53,6 @@ app.post('/login', function (req, res) {
   } else {
     console.log('cookie already exists')
   }
-
-  const templateVars = {
-    username: undefined,
-    urls: urlDatabase,
-  };
   res.redirect("/urls");
   next();
 })
@@ -54,11 +65,6 @@ app.post('/logout', function (req, res) {
   } else {
     console.log('no cookie exists')
   }
-
-  const templateVars = {
-    username: req.cookies["username"],
-    urls: urlDatabase,
-  };
   res.redirect("/urls");
   next();
 })
@@ -70,6 +76,15 @@ app.post('/logout', function (req, res) {
 
 app.get("/", (req, res) => {
   res.send("Hello!");
+});
+
+app.get("/registration", (req, res) => {
+  
+  
+  const templateVars = { 
+    username: req.cookies["username"], 
+  };
+  res.render("registration", templateVars);
 });
 
 
