@@ -75,17 +75,44 @@ app.post('/logout', function (req, res) {
 
 
 app.get("/", (req, res) => {
+  console.log('userIDis:', req.cookies.user_id)
+  console.log('userOBJis:',typeof users['req.cookies.user_id'], users['req.cookies.user_id'])
   res.send("Hello!");
 });
 
-app.get("/registration", (req, res) => {
+app.get("/register", (req, res) => {  
+  const templateVars = { 
+    username: req.cookies["username"], 
+  };
+  res.render("register", templateVars);
+});
+
+app.post("/register", (req, res) => {
+  // console.log('bodyIS', req.body )
+  // console.log('emailIs:', req.body.email)
+  // console.log('passwordIS', req.body.password)
   
+  let newUserID = generateRandomString()
+
+  users[newUserID] = {
+    id: "userRandomID",
+    email: req.body.email,
+    password: req.body.password,
+  }
+
+  res.cookie('user_id', newUserID)
+
+ console.log(users[newUserID])
+ console.log('--------------------------')
+ console.log(users)
   
   const templateVars = { 
     username: req.cookies["username"], 
   };
-  res.render("registration", templateVars);
+  res.redirect("/urls");
 });
+
+
 
 
 
