@@ -4,7 +4,6 @@ var cookieParser = require('cookie-parser');
 const e = require("express");// why did I do this?
 const PORT = 8080; // default port 8080
 
-
 //Express Settings
 app.set("view engine", "ejs"); // use ejs templating
 app.use(express.urlencoded({ extended: true }));
@@ -22,11 +21,6 @@ const urlDatabase = {
   },
 };
 
-// // Database (simulated)
-// const urlDatabase = {
-//   "b2xVn2": "http://www.lighthouselabs.ca",
-//   "9sm5xK": "http://www.google.com"
-// };
 const users = {
   userRandomID: {
     id: "userRandomID",
@@ -243,9 +237,6 @@ app.get("/urls/:id", (req, res) => {
     return res.status(403).send('Sorry, only the creator can view this page')
   }
 
-
-
-
   console.log(urlDatabase)
   const templateVars = { 
     id: req.params.id, 
@@ -324,7 +315,7 @@ app.get("/u/:id", (req, res) => {
 
 
 
-// Sample rout - can this be deleted?
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
