@@ -3,12 +3,18 @@ const app = express();
 var cookieParser = require('cookie-parser');
 const e = require("express");// why did I do this?
 const PORT = 8080; // default port 8080
+const bcrypt = require("bcryptjs");
 
 //Express Settings
 app.set("view engine", "ejs"); // use ejs templating
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 
+
+
+// const testpassword = "purple-monkey-dinosaur"; // found in the req.body object
+// const hashedPassword = bcrypt.hashSync(testpassword, 10);
+// console.log(hashedPassword)
 
 const urlDatabase = {
   b6UTxQ: {
@@ -62,7 +68,7 @@ function userEmailLookup (doesEmailExist) {
 }
 
 function checkPassword(userEmail, inputedPassword) {
-  if (users[getUserIDbyEmail(userEmail)].password === inputedPassword) {
+  if (bcrypt.compareSync(inputedPassword, users[getUserIDbyEmail(userEmail)].password)) {
     return true
   }
   return false
@@ -123,7 +129,7 @@ app.post("/register", (req, res) => {
   users[newUserID] = {
     id: newUserID,
     email: req.body.email,
-    password: req.body.password,
+    password: bcrypt.hashSync(req.body.password, 10),
   }
   res.cookie('user_id', newUserID)
 
