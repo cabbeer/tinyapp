@@ -10,11 +10,23 @@ app.set("view engine", "ejs"); // use ejs templating
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 
-// Database (simulated)
+
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
+
+// // Database (simulated)
+// const urlDatabase = {
+//   "b2xVn2": "http://www.lighthouselabs.ca",
+//   "9sm5xK": "http://www.google.com"
+// };
 
 const users = {
   userRandomID: {
@@ -74,16 +86,13 @@ app.get("/", (req, res) => {
 });
 
 app.get("/register", (req, res) => {  
-
+//userAuthorization
   if (req.cookies.user_id) {
     return res.redirect("/urls");
   }
 
-
-
   const templateVars = { 
-    username: users[req.cookies.user_id], 
-  };
+    username: users[req.cookies.user_id], };
   res.render("register", templateVars);
 });
 
@@ -110,7 +119,6 @@ app.post("/register", (req, res) => {
   }
   res.cookie('user_id', newUserID)
 
-
   // logs for logging
   console.log(users[req.cookies.user_id])
   console.log('--------------------------')
@@ -120,8 +128,7 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-
-
+  //userAuthorization
   if (req.cookies.user_id) {
     return res.redirect("/urls");
   }
@@ -150,7 +157,6 @@ app.post('/login', function (req, res) {
 })
 
 app.post('/logout', function (req, res) {
-  // Cookies that have not been signed
 
   if (req.cookies.user_id) {
     res.clearCookie('user_id')
@@ -158,18 +164,9 @@ app.post('/logout', function (req, res) {
     console.log('no cookie exists')
   }
 
-
-
   res.redirect("/login");
   next();
 })
-
-
-
-
-
-
-
 
 app.get("/urls", (req, res) => {
   const templateVars = { 
@@ -181,11 +178,10 @@ app.get("/urls", (req, res) => {
 
 //Create new ShortUrl Route
 app.get("/urls/new", (req, res) => {
-  
+  //userAuthorization
   if (!req.cookies.user_id) {
     return res.redirect("/login");
   }
-
 
   const templateVars = { 
     username: users[req.cookies.user_id],};
@@ -193,41 +189,46 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-
-
+  //userAuthorization
   if (!req.cookies.user_id) {
     return res.status(403).send('Please create an account or login to use tinyapp')
   }
 
-
-  let newRandomString = generateRandomString();
+  // Create new Short URL
+  let newUrlId = generateRandomString();
   //this checks if the randomstring is not in the DB before adding it; but the functionality is not complete, it should generate a new random string and then re-try adding it, but what are the odds that this is actually needed 
-  if (!urlDatabase[newRandomString]) {
-    urlDatabase[newRandomString] = req.body.longURL;
+  if (!urlDatabase[newUrlId]) {
+    urlDatabase[newUrlId] = {
+      longURL: req.body.longURL,
+      userID: req.cookies.user_id
+    }
   }
-  res.redirect("/urls/" + newRandomString);
+
+  res.redirect("/urls/" + newUrlId);
 });
+
+
+
+
 
 //View individual URL object
 app.get("/urls/:id", (req, res) => {
   console.log(urlDatabase)
   const templateVars = { 
     id: req.params.id, 
-    longURL: urlDatabase[req.params.id],
+    longURL: urlDatabase[req.params.id].longURL,
     username: users[req.cookies.user_id],};
   res.render("urls_show", templateVars);
 });
 
 //Edit Route
 app.post("/urls/:id", (req, res) => {
-  console.log(urlDatabase);
-  const updateKey = req.params.id;
-  console.log(updateKey);
-  urlDatabase[updateKey] = req.body.longURL;
+
+  urlDatabase[req.params.id].longURL = req.body.longURL;
 
   const templateVars = { 
     id: req.params.id, 
-    longURL: urlDatabase[req.params.id],
+    longURL: urlDatabase[req.params.id].longURL,
     username: users[req.cookies.user_id], };
   res.render("urls_show", templateVars);
 });
@@ -254,15 +255,13 @@ app.get("/u/:id", (req, res) => {
 
 
   console.log(req.params.id)
-  const longURL = urlDatabase[req.params.id];
+  const longURL = urlDatabase[req.params.id].longURL;
   console.log(urlDatabase)
   console.log(longURL)
   // const longURL = ...
   res.redirect(longURL);
 });
 
-
-//testing new branch commit
 
 
 // Sample rout - can this be deleted?
