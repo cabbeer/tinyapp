@@ -27,7 +27,6 @@ const urlDatabase = {
 //   "b2xVn2": "http://www.lighthouselabs.ca",
 //   "9sm5xK": "http://www.google.com"
 // };
-
 const users = {
   userRandomID: {
     id: "userRandomID",
@@ -73,6 +72,21 @@ function checkPassword(userEmail, inputedPassword) {
     return true
   }
   return false
+}
+
+
+function filterUrlDatabaseByUserID (userID) {
+  let userDatabase ={};
+
+  for (let links in urlDatabase) {
+    if (urlDatabase[links].userID === userID) {
+      userDatabase[links] = {
+        longURL: urlDatabase[links].longURL,
+        userID: urlDatabase[links].userID,
+      } 
+    }
+  }
+  return userDatabase
 }
 
 
@@ -169,8 +183,14 @@ app.post('/logout', function (req, res) {
 })
 
 app.get("/urls", (req, res) => {
+
+  if (!req.cookies.user_id) {
+    return res.redirect("/login");
+  }
+
+
   const templateVars = { 
-    urls: urlDatabase,
+    urls: filterUrlDatabaseByUserID(req.cookies.user_id),
     username: users[req.cookies.user_id], };
     console.log('check cookie',req.cookies)
   res.render("urls_index", templateVars);
@@ -224,7 +244,29 @@ app.get("/urls/:id", (req, res) => {
 //Edit Route
 app.post("/urls/:id", (req, res) => {
 
-  urlDatabase[req.params.id].longURL = req.body.longURL;
+
+
+  ///CHECK IN THE MORNING BEFORE MOVING FORWARD, I THINK IT WILL CHANGE THE longURLS belonging to user
+
+//   The individual URL pages should not be accessible to users who are not logged in.
+// Ensure the GET /urls/:id page returns a relevant error message to the user if they are not logged in.
+
+// The individual URL pages should not be accesible if the URL does not belong to them.
+// Ensure the GET /urls/:id page returns a relevant error message to the user if they do not own the URL.
+
+  // let userDB = filterUrlDatabaseByUserID(req.cookies.user_id)
+
+  // for (let links in urlDatabase) {
+  //   if (req.cookies.user_id === urlDatabase[links].userID) {
+  //     urlDatabase[req.params.id].longURL = req.body.longURL;
+  //   } else {
+
+  //   }
+  // }
+
+  
+
+  
 
   const templateVars = { 
     id: req.params.id, 
