@@ -18,12 +18,30 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
        </div>
 
-        <!-- New user form; Todo: fix styling-->
+       <% if(username){ %>
+
+        <div class="'navbar-nav">
+          <form method="POST" action="/logout" for="username" class="d-flex nav-item" role="search">
+            <span class="nav-link">Welcome back, <%= username.email %>!</span>
+            <button class="btn btn-light" type="submit">Logout</button>
+          </form>
+          </div>
+
+       <% } else{ %>  
+        
+        <div class="navbar-nav">
+          <a href="/login" class="btn btn-outline-primary">Login</a>
+          <a href="/register" class="btn btn-outline-secondary" >Create New User</a>
+         </div>
+
+        <% } %>
+
+<!-- Old Header
         <% if(username){ %>
 
           <div class="'navbar-nav">
             <form method="POST" action="/logout" for="username" class="d-flex nav-item" role="search">
-              <span class="nav-link">Welcome back, <%= username %>!</span>
+              <span class="nav-link">Welcome back, <%= username.email %>!</span>
               <button class="btn btn-light" type="submit">Logout</button>
             </form>
             </div>
@@ -44,6 +62,11 @@
             </div>    
         
         <% } %>
+
+-->
+
+
+
       
       </div>
     </div>

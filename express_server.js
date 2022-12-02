@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 var cookieParser = require('cookie-parser');
-const e = require("express");
+const e = require("express");// why did I do this?
 const PORT = 8080; // default port 8080
 
 
@@ -29,30 +29,112 @@ const users = {
   },
 };
 
-
-
-
 //Functions
 function generateRandomString () {
-   let rString = '';
+   let randomString = '';
    let validChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
    for (let x=0; x < 6; x++) {
-    rString += validChars.charAt(Math.floor(Math.random() * validChars.length));
+    randomString += validChars.charAt(Math.floor(Math.random() * validChars.length));
    }
-   return rString
+   return randomString
+}
+
+// If the user exists ? returns a string with the User ID :  else returns false
+function getUserIDbyEmail(checkEmail) {
+  for (let user in users) { 
+    if (users[user].email === checkEmail) {
+      return users[user].id
+    }
+  }
+ return false
+} 
+
+function userEmailLookup (doesEmailExist) { 
+  if (typeof getUserIDbyEmail(doesEmailExist) === 'string') {
+    return true
+  }
+ return false
+}
+
+function checkPassword(userEmail, inputedPassword) {
+  if (users[getUserIDbyEmail(userEmail)].password === inputedPassword) {
+    return true
+  }
+  return false
 }
 
 
 //Routing
+app.get("/", (req, res) => {
+  console.log('userIDis:', req.cookies.user_id)
+  console.log('userOBJis:',typeof users[req.cookies.user_id], users[req.cookies.user_id])
+  res.send("Hello!");
+});
+
+app.get("/register", (req, res) => {  
+  const templateVars = { 
+    username: users[req.cookies.user_id], 
+  };
+  res.render("register", templateVars);
+});
+
+app.post("/register", (req, res) => {
+// THOW SHALL NOT PASS ===*
+  // Gaurd: Email is empty String
+  if (req.body.email === '') {
+    return res.status(400).send('Username Can\'t be empty')
+  } 
+  // Gaurd: Password is empty String
+  if (req.body.password === '') {
+    return res.status(400).send('Password Can\'t be empty')
+  } 
+  //Gaurd: Email Exists in DB
+  if (userEmailLookup(req.body.email)) {
+    return res.status(400).send('An account with this email exists \n please visit this link tinyapp.com/login to sign in')
+  }
+
+  //Balrog cannot stop you, Create New User and return session cookie
+  let newUserID = generateRandomString()
+  users[newUserID] = {
+    id: newUserID,
+    email: req.body.email,
+    password: req.body.password,
+  }
+  res.cookie('user_id', newUserID)
+
+  // logs for logging
+  console.log(users[req.cookies.user_id])
+  console.log('--------------------------')
+  console.log(users)
+
+  res.redirect("/urls");
+});
+
+
+
+app.get("/login", (req, res) => {
+  // THOW SHALL NOT PASS:::
+  // Gaurd: Email not in DB
+  
+  
+  console.log('check cookie',req.cookies)
+  
+  const templateVars = {};
+  res.render("login", templateVars);
+});
 
 app.post('/login', function (req, res) {
-  // Cookies that have not been signed
-
-  if (req.cookies.username === undefined) {
-    res.cookie('username', req.body.username)
-  } else {
-    console.log('cookie already exists')
+  // Check if Email exists in BD
+  if (!userEmailLookup(req.body.email)) {
+    return res.status(403).send('Sorry, this user doesn\'t seem to exists \n visit tinyapp.com/register to create a new account')
   }
+  // Check password ? Set session cookie : return 403 error
+  if (checkPassword(req.body.email, req.body.password)) {
+    res.cookie('user_id', getUserIDbyEmail(req.body.email))
+  } else {
+    res.status(403).send('Incorrect password, please try again')
+  }
+
   res.redirect("/urls");
   next();
 })
@@ -60,57 +142,19 @@ app.post('/login', function (req, res) {
 app.post('/logout', function (req, res) {
   // Cookies that have not been signed
 
-  if (req.cookies.username) {
-    res.clearCookie('username', req.body.username)
+  if (req.cookies.user_id) {
+    res.clearCookie('user_id')
   } else {
     console.log('no cookie exists')
   }
-  res.redirect("/urls");
+
+
+
+  res.redirect("/login");
   next();
 })
 
 
-
-
-
-
-app.get("/", (req, res) => {
-  console.log('userIDis:', req.cookies.user_id)
-  console.log('userOBJis:',typeof users['req.cookies.user_id'], users['req.cookies.user_id'])
-  res.send("Hello!");
-});
-
-app.get("/register", (req, res) => {  
-  const templateVars = { 
-    username: req.cookies["username"], 
-  };
-  res.render("register", templateVars);
-});
-
-app.post("/register", (req, res) => {
-  // console.log('bodyIS', req.body )
-  // console.log('emailIs:', req.body.email)
-  // console.log('passwordIS', req.body.password)
-  
-  let newUserID = generateRandomString()
-
-  users[newUserID] = {
-    id: "userRandomID",
-    email: req.body.email,
-    password: req.body.password,
-  }
-
-  res.cookie('user_id', newUserID)
-
- console.log(users[newUserID])
- console.log('--------------------------')
- console.log(users)
-  
-  const templateVars = { 
-    username: req.cookies["username"], 
-  };
-  res.redirect("/urls");
-});
 
 
 
@@ -120,7 +164,7 @@ app.post("/register", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = { 
     urls: urlDatabase,
-    username: req.cookies["username"], };
+    username: users[req.cookies.user_id], };
     console.log('check cookie',req.cookies)
   res.render("urls_index", templateVars);
 });
@@ -128,7 +172,7 @@ app.get("/urls", (req, res) => {
 //Create new ShortUrl Route
 app.get("/urls/new", (req, res) => {
   const templateVars = { 
-    username: req.cookies["username"],};
+    username: users[req.cookies.user_id],};
   res.render("urls_new", templateVars );
 });
 
@@ -147,7 +191,7 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = { 
     id: req.params.id, 
     longURL: urlDatabase[req.params.id],
-    username: req.cookies["username"],};
+    username: users[req.cookies.user_id],};
   res.render("urls_show", templateVars);
 });
 
@@ -161,7 +205,7 @@ app.post("/urls/:id", (req, res) => {
   const templateVars = { 
     id: req.params.id, 
     longURL: urlDatabase[req.params.id],
-    username: req.cookies["username"], };
+    username: users[req.cookies.user_id], };
   res.render("urls_show", templateVars);
 });
 
@@ -171,7 +215,7 @@ app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
   const templateVars = { 
     urls: urlDatabase, 
-    username: req.cookies["username"],};
+    username: users[req.cookies.user_id],};
   res.render("urls_index", templateVars);
 });
 
