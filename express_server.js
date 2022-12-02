@@ -66,12 +66,21 @@ function checkPassword(userEmail, inputedPassword) {
 
 //Routing
 app.get("/", (req, res) => {
+  //logs 
   console.log('userIDis:', req.cookies.user_id)
   console.log('userOBJis:',typeof users[req.cookies.user_id], users[req.cookies.user_id])
+  
   res.send("Hello!");
 });
 
 app.get("/register", (req, res) => {  
+
+  if (req.cookies.user_id) {
+    return res.redirect("/urls");
+  }
+
+
+
   const templateVars = { 
     username: users[req.cookies.user_id], 
   };
@@ -79,7 +88,7 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-// THOW SHALL NOT PASS ===*
+// YOU SHALL NOT PASS ===*
   // Gaurd: Email is empty String
   if (req.body.email === '') {
     return res.status(400).send('Username Can\'t be empty')
@@ -92,8 +101,7 @@ app.post("/register", (req, res) => {
   if (userEmailLookup(req.body.email)) {
     return res.status(400).send('An account with this email exists \n please visit this link tinyapp.com/login to sign in')
   }
-
-  //Balrog cannot stop you, Create New User and return session cookie
+//Create New User and return session cookie
   let newUserID = generateRandomString()
   users[newUserID] = {
     id: newUserID,
@@ -101,6 +109,7 @@ app.post("/register", (req, res) => {
     password: req.body.password,
   }
   res.cookie('user_id', newUserID)
+
 
   // logs for logging
   console.log(users[req.cookies.user_id])
@@ -110,13 +119,14 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 });
 
-
-
 app.get("/login", (req, res) => {
-  // THOW SHALL NOT PASS:::
-  // Gaurd: Email not in DB
-  
-  
+
+
+  if (req.cookies.user_id) {
+    return res.redirect("/urls");
+  }
+
+  //logs
   console.log('check cookie',req.cookies)
   
   const templateVars = {};
@@ -171,14 +181,27 @@ app.get("/urls", (req, res) => {
 
 //Create new ShortUrl Route
 app.get("/urls/new", (req, res) => {
+  
+  if (!req.cookies.user_id) {
+    return res.redirect("/login");
+  }
+
+
   const templateVars = { 
     username: users[req.cookies.user_id],};
   res.render("urls_new", templateVars );
 });
 
 app.post("/urls", (req, res) => {
+
+
+  if (!req.cookies.user_id) {
+    return res.status(403).send('Please create an account or login to use tinyapp')
+  }
+
+
   let newRandomString = generateRandomString();
-  //this checks if the randomstring is not in the DB before adding it; but the functionality is not complete, it should generate a new random string and then re-try adding it, prolly should use a recursion here?
+  //this checks if the randomstring is not in the DB before adding it; but the functionality is not complete, it should generate a new random string and then re-try adding it, but what are the odds that this is actually needed 
   if (!urlDatabase[newRandomString]) {
     urlDatabase[newRandomString] = req.body.longURL;
   }
@@ -223,6 +246,13 @@ app.post("/urls/:id/delete", (req, res) => {
 
 //Redirect short-url route
 app.get("/u/:id", (req, res) => {
+
+  if (!urlDatabase[req.params.id]) {
+    return res.status(404).send("Our apologies. \n We\'re unable to find the page you\'re looking for. - tinyapp"
+    )
+  }
+
+
   console.log(req.params.id)
   const longURL = urlDatabase[req.params.id];
   console.log(urlDatabase)
@@ -230,7 +260,6 @@ app.get("/u/:id", (req, res) => {
   // const longURL = ...
   res.redirect(longURL);
 });
-
 
 
 //testing new branch commit
