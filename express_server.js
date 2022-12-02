@@ -233,6 +233,19 @@ app.post("/urls", (req, res) => {
 
 //View individual URL object
 app.get("/urls/:id", (req, res) => {
+//userAuthorization
+  //Not logged in
+  if (!req.cookies.user_id) {
+    return res.status(403).send('Please login to view this page')
+  }
+  //Not owner
+  if (urlDatabase[req.params.id].userID !== req.cookies.user_id) {
+    return res.status(403).send('Sorry, only the creator can view this page')
+  }
+
+
+
+
   console.log(urlDatabase)
   const templateVars = { 
     id: req.params.id, 
@@ -243,30 +256,23 @@ app.get("/urls/:id", (req, res) => {
 
 //Edit Route
 app.post("/urls/:id", (req, res) => {
+//userAuthorization
+  //Not logged in
+  if (!req.cookies.user_id) {
+    return res.status(403).send('Please login to view this page')
+  }
+  //Not owner
+  if (urlDatabase[req.params.id].userID !== req.cookies.user_id) {
+    return res.status(403).send('Sorry, only the creator can edit this page')
+  }
+  // object not found in DB
+  if (!urlDatabase[req.params.id]) {
+    return res.status(404).send('Sorry, file not found')
+  }
 
+  //edit function
+  urlDatabase[req.params.id].longURL = req.body.longURL;
 
-
-  ///CHECK IN THE MORNING BEFORE MOVING FORWARD, I THINK IT WILL CHANGE THE longURLS belonging to user
-
-//   The individual URL pages should not be accessible to users who are not logged in.
-// Ensure the GET /urls/:id page returns a relevant error message to the user if they are not logged in.
-
-// The individual URL pages should not be accesible if the URL does not belong to them.
-// Ensure the GET /urls/:id page returns a relevant error message to the user if they do not own the URL.
-
-  // let userDB = filterUrlDatabaseByUserID(req.cookies.user_id)
-
-  // for (let links in urlDatabase) {
-  //   if (req.cookies.user_id === urlDatabase[links].userID) {
-  //     urlDatabase[req.params.id].longURL = req.body.longURL;
-  //   } else {
-
-  //   }
-  // }
-
-  
-
-  
 
   const templateVars = { 
     id: req.params.id, 
@@ -277,12 +283,24 @@ app.post("/urls/:id", (req, res) => {
 
 //Delete Route 
 app.post("/urls/:id/delete", (req, res) => {
+//userAuthorization
+  //Not logged in
+  if (!req.cookies.user_id) {
+    return res.status(403).send('Please login to view this page')
+  }
+  //Not owner
+  if (urlDatabase[req.params.id].userID !== req.cookies.user_id) {
+    return res.status(403).send('Sorry, only the creator can edit this page')
+  }
+  // object not found in DB
+  if (!urlDatabase[req.params.id]) {
+    return res.status(404).send('Sorry, file not found')
+  }
   
+  //delete function
   delete urlDatabase[req.params.id];
-  const templateVars = { 
-    urls: urlDatabase, 
-    username: users[req.cookies.user_id],};
-  res.render("urls_index", templateVars);
+  
+  res.redirect("/urls");
 });
 
 
