@@ -11,11 +11,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 
 
-
-// const testpassword = "purple-monkey-dinosaur"; // found in the req.body object
-// const hashedPassword = bcrypt.hashSync(testpassword, 10);
-// console.log(hashedPassword)
-
 const urlDatabase = {
   b6UTxQ: {
     longURL: "https://www.tsn.ca",
@@ -74,7 +69,6 @@ function checkPassword(userEmail, inputedPassword) {
   return false
 }
 
-
 function filterUrlDatabaseByUserID (userID) {
   let userDatabase ={};
 
@@ -88,7 +82,6 @@ function filterUrlDatabaseByUserID (userID) {
   }
   return userDatabase
 }
-
 
 //Routing
 app.get("/", (req, res) => {
@@ -227,10 +220,6 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls/" + newUrlId);
 });
 
-
-
-
-
 //View individual URL object
 app.get("/urls/:id", (req, res) => {
 //userAuthorization
@@ -300,8 +289,6 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect("/urls");
 });
 
-
-
 //Redirect short-url route
 app.get("/u/:id", (req, res) => {
 
@@ -318,8 +305,6 @@ app.get("/u/:id", (req, res) => {
   // const longURL = ...
   res.redirect(longURL);
 });
-
-
 
 
 app.listen(PORT, () => {
