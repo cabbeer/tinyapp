@@ -1,14 +1,24 @@
 const express = require("express");
 const app = express();
-var cookieParser = require('cookie-parser');
+var cookieParser = require('cookie-parser'); // remove after migration to cookie sessions 
 const e = require("express");// why did I do this?
 const PORT = 8080; // default port 8080
 const bcrypt = require("bcryptjs");
+var cookieSession = require('cookie-session')
 
 //Express Settings
 app.set("view engine", "ejs"); // use ejs templating
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
+
+app.use(cookieSession({
+  name: 'user_id',
+  keys: [ 'your-secret-key-goes-here', 'your-secret-key-goes-here' ],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
+
 
 
 const urlDatabase = {
@@ -86,20 +96,20 @@ function filterUrlDatabaseByUserID (userID) {
 //Routing
 app.get("/", (req, res) => {
   //logs 
-  console.log('userIDis:', req.cookies.user_id)
-  console.log('userOBJis:',typeof users[req.cookies.user_id], users[req.cookies.user_id])
+  console.log('userIDis:', req.session.user_id)
+  console.log('userOBJis:',typeof users[req.session.user_id], users[req.session.user_id])
   
   res.send("Hello!");
 });
 
 app.get("/register", (req, res) => {  
 //userAuthorization
-  if (req.cookies.user_id) {
+  if (req.session.user_id) {
     return res.redirect("/urls");
   }
 
   const templateVars = { 
-    username: users[req.cookies.user_id], };
+    username: users[req.session.user_id], };
   res.render("register", templateVars);
 });
 
@@ -124,10 +134,10 @@ app.post("/register", (req, res) => {
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 10),
   }
-  res.cookie('user_id', newUserID)
+  req.session.user_id = newUserID;
 
   // logs for logging
-  console.log(users[req.cookies.user_id])
+  console.log(users[req.session.user_id])
   console.log('--------------------------')
   console.log(users)
 
@@ -136,7 +146,7 @@ app.post("/register", (req, res) => {
 
 app.get("/login", (req, res) => {
   //userAuthorization
-  if (req.cookies.user_id) {
+  if (req.session.user_id) {
     return res.redirect("/urls");
   }
 
@@ -154,7 +164,7 @@ app.post('/login', function (req, res) {
   }
   // Check password ? Set session cookie : return 403 error
   if (checkPassword(req.body.email, req.body.password)) {
-    res.cookie('user_id', getUserIDbyEmail(req.body.email))
+    req.session.user_id = getUserIDbyEmail(req.body.email);
   } else {
     res.status(403).send('Incorrect password, please try again')
   }
@@ -165,7 +175,7 @@ app.post('/login', function (req, res) {
 
 app.post('/logout', function (req, res) {
 
-  if (req.cookies.user_id) {
+  if (req.session.user_id) {
     res.clearCookie('user_id')
   } else {
     console.log('no cookie exists')
@@ -177,14 +187,14 @@ app.post('/logout', function (req, res) {
 
 app.get("/urls", (req, res) => {
 
-  if (!req.cookies.user_id) {
+  if (!req.session.user_id) {
     return res.redirect("/login");
   }
 
 
   const templateVars = { 
-    urls: filterUrlDatabaseByUserID(req.cookies.user_id),
-    username: users[req.cookies.user_id], };
+    urls: filterUrlDatabaseByUserID(req.session.user_id),
+    username: users[req.session.user_id], };
     console.log('check cookie',req.cookies)
   res.render("urls_index", templateVars);
 });
@@ -192,18 +202,18 @@ app.get("/urls", (req, res) => {
 //Create new ShortUrl Route
 app.get("/urls/new", (req, res) => {
   //userAuthorization
-  if (!req.cookies.user_id) {
+  if (!req.session.user_id) {
     return res.redirect("/login");
   }
 
   const templateVars = { 
-    username: users[req.cookies.user_id],};
+    username: users[req.session.user_id],};
   res.render("urls_new", templateVars );
 });
 
 app.post("/urls", (req, res) => {
   //userAuthorization
-  if (!req.cookies.user_id) {
+  if (!req.session.user_id) {
     return res.status(403).send('Please create an account or login to use tinyapp')
   }
 
@@ -213,7 +223,7 @@ app.post("/urls", (req, res) => {
   if (!urlDatabase[newUrlId]) {
     urlDatabase[newUrlId] = {
       longURL: req.body.longURL,
-      userID: req.cookies.user_id
+      userID: req.session.user_id
     }
   }
 
@@ -224,11 +234,11 @@ app.post("/urls", (req, res) => {
 app.get("/urls/:id", (req, res) => {
 //userAuthorization
   //Not logged in
-  if (!req.cookies.user_id) {
+  if (!req.session.user_id) {
     return res.status(403).send('Please login to view this page')
   }
   //Not owner
-  if (urlDatabase[req.params.id].userID !== req.cookies.user_id) {
+  if (urlDatabase[req.params.id].userID !== req.session.user_id) {
     return res.status(403).send('Sorry, only the creator can view this page')
   }
 
@@ -236,7 +246,7 @@ app.get("/urls/:id", (req, res) => {
   const templateVars = { 
     id: req.params.id, 
     longURL: urlDatabase[req.params.id].longURL,
-    username: users[req.cookies.user_id],};
+    username: users[req.session.user_id],};
   res.render("urls_show", templateVars);
 });
 
@@ -244,11 +254,11 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls/:id", (req, res) => {
 //userAuthorization
   //Not logged in
-  if (!req.cookies.user_id) {
+  if (!req.session.user_id) {
     return res.status(403).send('Please login to view this page')
   }
   //Not owner
-  if (urlDatabase[req.params.id].userID !== req.cookies.user_id) {
+  if (urlDatabase[req.params.id].userID !== req.session.user_id) {
     return res.status(403).send('Sorry, only the creator can edit this page')
   }
   // object not found in DB
@@ -263,7 +273,7 @@ app.post("/urls/:id", (req, res) => {
   const templateVars = { 
     id: req.params.id, 
     longURL: urlDatabase[req.params.id].longURL,
-    username: users[req.cookies.user_id], };
+    username: users[req.session.user_id], };
   res.render("urls_show", templateVars);
 });
 
@@ -271,11 +281,11 @@ app.post("/urls/:id", (req, res) => {
 app.post("/urls/:id/delete", (req, res) => {
 //userAuthorization
   //Not logged in
-  if (!req.cookies.user_id) {
+  if (!req.session.user_id) {
     return res.status(403).send('Please login to view this page')
   }
   //Not owner
-  if (urlDatabase[req.params.id].userID !== req.cookies.user_id) {
+  if (urlDatabase[req.params.id].userID !== req.session.user_id) {
     return res.status(403).send('Sorry, only the creator can edit this page')
   }
   // object not found in DB
