@@ -1,11 +1,8 @@
 /*
-This was created for me to have some fun with tinyapp, and see if I remember any of my css
-insperation from: gumtree, basecamp, craigmod, iA, tehan+lax, figma
+This was created for me to have some fun with tinyapp, and see if I remember any of my css... the css is very messy/ reduntant/ improperly organized.... I didn't have time to clean it up. 
+insperation from: gumtree, basecamp, craigmod, iA, tehan+lax, figmas
 
-CSS outline: 
-- global
-- forms
-- buttons
+NOTE: MOBILE VIEW IS CURRENTLY BROKEN
 
 */
 
@@ -232,10 +229,18 @@ td {
 .fancy-link:hover {
   color: #007AFC;
 }
-.fancy-link:hover::before {
+/* .fancy-link:hover::before {
   content: ' 🔗';
   position: absolute;
   left: -1.1em;
+} */
+
+
+.fancy-link:hover::after {
+  content: ' 🔗';
+  position: absolute;
+  right: -1.1em;
+  font-size: 20px;
 }
 
 .fancy-link::selection {
@@ -312,24 +317,42 @@ td {
 /* Buttons*/
 
 .tag-simple {
-
-
   border-radius: 8px;
   box-shadow: 0 2px 5px 0 rgb(213 217 217 / 50%);
-  background: #FFD814;
-  border: 1px solid #FCD200;
+  background: rgb(239, 238, 234);
+  border: 1px solid rgb(239, 238, 234);
   padding: 0 6px;
   text-align: center;
   font-weight: 500;
   color: #0F1111;
   margin: 0 auto;
   display: inline-block;
-
-  
 }
+
+.tag-simple > a {
+
+  font-weight: 600 ;
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: #007AFC;
+  font-size: 23px;
+  display: inline-block;
+  padding-top: 0.2em;
+  position: relative;
+}
+.tag-simple > a:hover {
+  color: #007AFC;
+  font-weight: 600 ;
+}
+.tag-simple > a:hover::after {
+  content: ' 🔗';
+  position: absolute;
+  right: -1.1em;
+  font-size: 20px;
+}
+
+
 .tag-simple:hover{
-      background: #F7CA00;
-      border-color: #F2C200;
       box-shadow: 0 2px 5px 0 rgb(213 217 217 / 50%);
   }
 .btn-exit {
@@ -361,9 +384,9 @@ td {
   background-color: #616467;
 }
 
-.btn-add {
+/* .btn-add {
 
-}
+} */
 
 .btn-pop-light {
   background: rgb(255, 255, 255);

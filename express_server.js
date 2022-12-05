@@ -1,31 +1,26 @@
 //Project Global
 const express = require("express");
 const app = express();
-var cookieParser = require('cookie-parser'); // remove after migration to cookie sessions 
-const e = require("express");// why did I do this?
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 const bcrypt = require("bcryptjs");
 var cookieSession = require('cookie-session')
 
 //Express Settings
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser())
 app.use(cookieSession({
   name: 'user_id',
   keys: [ 'Pneumonoultramicroscopicsilicovolcanoconiosis', 'Floccinaucinihilipilification' ],
   maxAge: 24 * 60 * 60 * 1000
 }))
 
-//CSS
+//CSS (Static file directory)
 app.use(express.static("views/styles"));
-// app.use(express.static(__dirname + 'views/styles'));
+
 //Helper Functions && URL_DB  && User_DB
 const { generateRandomString, getUserIDbyEmail, userEmailLookup, checkPassword, filterUrlDatabaseByUserID, urlDatabase, users } = require('./helpers.js');
 
 
-
- 
 //Routing
 app.get("/", (req, res) => {
   //logs 

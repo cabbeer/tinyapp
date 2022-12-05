@@ -37,7 +37,7 @@
         <tbody>
           <% for (let id in urls) { %>
             <tr>
-              <td><button data-toggle="tooltip" data-placement="top" title="Tooltip on top" class="tag-simple"><%= id %></button></td>
+              <td><button data-toggle="tooltip" data-placement="top" title="Tooltip on top" class="tag-simple">/u/<a href="/u/<%= id %>"><%= id %></a></button></td>
               <td><a class="fancy-link" href="/u/<%= id %>"><%= urls[id].longURL %></a></td>
               <td>
                 <form action="/urls/<%= id %>">  <button type="submit" class="btn-action-u">Edit</button></form>
