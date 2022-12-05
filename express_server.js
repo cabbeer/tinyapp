@@ -13,6 +13,7 @@ app.use(cookieSession({
   keys: [ 'Pneumonoultramicroscopicsilicovolcanoconiosis', 'Floccinaucinihilipilification' ],
   maxAge: 24 * 60 * 60 * 1000
 }))
+// NOTE: BCrypt declared in helpers.js file
 
 //CSS (Static file directory)
 app.use(express.static("views/styles"));
@@ -23,10 +24,6 @@ const { generateRandomString, getUserIDbyEmail, userEmailLookup, checkPassword, 
 
 //Routing
 app.get("/", (req, res) => {
-  //logs 
-  console.log('userIDis:', req.session.user_id)
-  console.log('userOBJis:',typeof users[req.session.user_id], users[req.session.user_id])
-  
   res.send("Hello!");
 });
 
@@ -37,7 +34,9 @@ app.get("/register", (req, res) => {
   }
 
   const templateVars = { 
-    username: users[req.session.user_id], };
+    username: users[req.session.user_id], 
+  };
+
   res.render("register", templateVars);
 });
 
@@ -64,11 +63,6 @@ app.post("/register", (req, res) => {
   }
   req.session.user_id = newUserID;
 
-  // logs for logging
-  console.log(users[req.session.user_id])
-  console.log('--------------------------')
-  console.log(users)
-
   res.redirect("/urls");
 });
 
@@ -77,10 +71,7 @@ app.get("/login", (req, res) => {
   if (req.session.user_id) {
     return res.redirect("/urls");
   }
-
-  //logs
-  console.log('check cookie',req.cookies)
-  
+ 
   const templateVars = {};
   res.render("login", templateVars);
 });
@@ -105,9 +96,7 @@ app.post('/logout', function (req, res) {
 
   if (req.session.user_id) {
     res.clearCookie('user_id')
-  } else {
-    console.log('no cookie exists')
-  }
+  } 
 
   res.redirect("/login");
   next();
@@ -119,11 +108,11 @@ app.get("/urls", (req, res) => {
     return res.redirect("/login");
   }
 
-
   const templateVars = { 
     urls: filterUrlDatabaseByUserID(req.session.user_id),
-    username: users[req.session.user_id], };
-    console.log('check cookie',req.cookies)
+    username: users[req.session.user_id], 
+  };
+
   res.render("urls_index", templateVars);
 });
 
@@ -135,7 +124,9 @@ app.get("/urls/new", (req, res) => {
   }
 
   const templateVars = { 
-    username: users[req.session.user_id],};
+    username: users[req.session.user_id],
+  };
+
   res.render("urls_new", templateVars );
 });
 
@@ -170,7 +161,6 @@ app.get("/urls/:id", (req, res) => {
     return res.status(403).send('Sorry, only the creator can view this page')
   }
 
-  console.log(urlDatabase)
   const templateVars = { 
     id: req.params.id, 
     longURL: urlDatabase[req.params.id].longURL,
@@ -197,11 +187,12 @@ app.post("/urls/:id", (req, res) => {
   //edit function
   urlDatabase[req.params.id].longURL = req.body.longURL;
 
-
   const templateVars = { 
     id: req.params.id, 
     longURL: urlDatabase[req.params.id].longURL,
-    username: users[req.session.user_id], };
+    username: users[req.session.user_id], 
+  };
+
   res.render("urls_show", templateVars);
 });
 
@@ -235,12 +226,7 @@ app.get("/u/:id", (req, res) => {
     )
   }
 
-
-  console.log(req.params.id)
   const longURL = urlDatabase[req.params.id].longURL;
-  console.log(urlDatabase)
-  console.log(longURL)
-  // const longURL = ...
   res.redirect(longURL);
 });
 
