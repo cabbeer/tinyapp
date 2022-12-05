@@ -1,3 +1,4 @@
+//Project Global
 const express = require("express");
 const app = express();
 var cookieParser = require('cookie-parser'); // remove after migration to cookie sessions 
@@ -7,24 +8,24 @@ const bcrypt = require("bcryptjs");
 var cookieSession = require('cookie-session')
 
 //Express Settings
-app.set("view engine", "ejs"); // use ejs templating
+app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
-
 app.use(cookieSession({
   name: 'user_id',
   keys: [ 'Pneumonoultramicroscopicsilicovolcanoconiosis', 'Floccinaucinihilipilification' ],
-  // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  maxAge: 24 * 60 * 60 * 1000
 }))
 
-
-// Import Helper functions && URL/User DB
+//CSS
+app.use(express.static("views/styles"));
+// app.use(express.static(__dirname + 'views/styles'));
+//Helper Functions && URL_DB  && User_DB
 const { generateRandomString, getUserIDbyEmail, userEmailLookup, checkPassword, filterUrlDatabaseByUserID, urlDatabase, users } = require('./helpers.js');
 
 
 
-
+ 
 //Routing
 app.get("/", (req, res) => {
   //logs 
@@ -49,11 +50,11 @@ app.post("/register", (req, res) => {
 // YOU SHALL NOT PASS ===*
   // Gaurd: Email is empty String
   if (req.body.email === '') {
-    return res.status(400).send('Username Can\'t be empty')
+    return res.status(400).send('Username or Password Can\'t be empty')
   } 
   // Gaurd: Password is empty String
   if (req.body.password === '') {
-    return res.status(400).send('Password Can\'t be empty')
+    return res.status(400).send('Username or Password Can\'t be empty')
   } 
   //Gaurd: Email Exists in DB
   if (userEmailLookup(req.body.email)) {
@@ -161,7 +162,7 @@ app.post("/urls", (req, res) => {
 
   res.redirect("/urls/" + newUrlId);
 });
-
+ 
 //View individual URL object
 app.get("/urls/:id", (req, res) => {
 //userAuthorization

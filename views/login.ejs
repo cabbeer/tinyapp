@@ -14,32 +14,36 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
-
+    <link rel="stylesheet" type="text/css" href="style.css">
     <title>Login - TinyApp</title>
   </head>
 
-  <body>
+  <body> 
 
 
-
-<div class="container">
-  <h1>Login</h1>
+<!-- <h1 class="logo-big">TinyApp</h1> -->
+<div class="pannel-baloon">
+  <h1>Login to TinyApp</h1>
 
 <main style="margin: 1em;">
     <form method="POST" action="/login">
       <div class="form-group">
         <label type="email" name="email" for="">Email address</label>
         <input type="email" name="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
-        <small id="emailHelp" class="form-text text-muted">Add something here later</small>
+        <!-- <small id="emailHelp" class="form-text text-muted">Add something here later</small> -->
       </div>
       <div class="form-group">
         <label for="exampleInputPassword1">Password</label>
         <input type="password" name="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
       </div>
 
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="submit" class="btn-baloon-main">Submit</button>
     </form>
   </main>
+  <div class="break-content">
+    <div class="break-content-inner">Or, create an account</div>
+  </div>
+  <a class="btn-baloon-more" href="/register">Register →</a>
 
 </div>
 

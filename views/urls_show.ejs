@@ -8,13 +8,45 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
-    <title>URL - TinyApp Example</title>
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <title>URL - TinyApp</title>
   </head>
 
   <body>
     <%- include('partials/_header'); %>
 
-    <div class="card text-center">
+    <!-- <h3 class="page-title"><span>TinyURL for: <%= longURL %></span></h3> -->
+
+    <h3 class="page-title"><span>Edit Short URL ID:     <a class="" href="/u/<%= id %>"><%= id %></a></span></h3>
+
+    <main class="pannel">
+      <!-- <div class="pannel-section-small">
+        <p class="card-text">
+          Short URL ID: <a class="fancy-link" href="/u/<%= id %>"><%= id %></a>
+        </p>
+      </div> -->
+      <div class="pannel-section-main">
+      <div>
+      <form class="form-inline" action="/urls/<%= id %>" method="POST">
+        <div class="form-group mb-2">
+          <label for="longURL">Edit:</label>
+          <input
+            value ="<%= longURL %>"  
+            class="clean-input"
+            type="text"
+            name="longURL"
+            placeholder="http://"
+            style="width: 300px; margin: 1em"
+          />
+          <a class="btn-pop-light cancel-btn" href="/urls">Cancel</a>
+          <button type="submit" class="btn-pop-light btn-post">Update</button>
+        </div>
+      </form>
+    </div>
+    </div>
+    </main>
+
+    <!-- <div class="card text-center">
       <div class="card-header"></div>
       <div class="card-body">
         <h5 class="card-title">TinyURL for: <%= longURL %></h5>
@@ -22,25 +54,29 @@
           Short URL ID: <a href="/u/<%= id %>"><%= id %></a>
         </p>
         
-        <!-- edit LongURl form-->
+        
         <form class="form-inline" action="/urls/<%= id %>" method="POST">
           <div class="form-group mb-2">
             <label for="longURL">Edit:</label>
             <input
               value ="<%= longURL %>"  
-              class="form-control"
+              class="clean-input"
               type="text"
               name="longURL"
               placeholder="http://"
               style="width: 300px; margin: 1em"
             />
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn-pop-light">Submit</button>
           </div>
         </form>
 
       </div>
       <div class="card-footer text-muted"></div>
-    </div>
+    </div> -->
+
+
+
+
     <!-- Bootstrap JS -->
     <script
       src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

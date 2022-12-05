@@ -1,5 +1,5 @@
 <header>
-  <nav class="navbar navbar-expand-md navbar-dark bg-success">
+  <nav class="navbar navbar-expand-md navbar-dark nav-light">
     <a class="navbar-brand" href="/urls">TinyApp</a>
     <button
       class="navbar-toggler"
@@ -14,8 +14,8 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav" style="margin-right: auto !important;">
-        <a class="nav-item nav-link" href="/urls">My URLs</a>
-        <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+        <a class="btn-pop-light" href="/urls">My URLs</a>
+        <a class="btn-pop-bold" href="/urls/new">Create New URL</a>
        </div>
 
        <% if(username){ %>
@@ -23,15 +23,16 @@
         <div class="'navbar-nav">
           <form method="POST" action="/logout" for="username" class="d-flex nav-item" role="search">
             <span class="nav-link">Welcome back, <%= username.email %>!</span>
-            <button class="btn btn-light" type="submit">Logout</button>
+            <button class="btn-exit" type="submit">Logout</button>
           </form>
           </div>
 
        <% } else{ %>  
         
         <div class="navbar-nav">
-          <a href="/login" class="btn btn-outline-primary">Login</a>
-          <a href="/register" class="btn btn-outline-secondary" >Create New User</a>
+          <!-- <a href="/login" class="btn btn-outline-primary">Login</a>
+          <a href="/register" class="btn btn-outline-secondary" >Create New User</a> -->
+          <h1>If you are seeing this that means the server has restarted and all users/ urls have been erased from the <em>DB</em>, please delete cookies and go to the register page to create a new user <br/> <bold>NOTE: This MSG was intentionally left in as a reminder</bold></h1>
          </div>
 
         <% } %>

@@ -14,7 +14,7 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
-
+    <link rel="stylesheet" type="text/css" href="style.css">
     <title>Registration - TinyApp</title>
   </head>
 
@@ -22,8 +22,8 @@
 
 
 
-<div class="container">
-  <h1>Register</h1>
+<div class="pannel-baloon">
+  <h1>Create a TinyApp Account</h1>
 
 <main style="margin: 1em;">
     <form method="POST" action="/register">
@@ -37,9 +37,13 @@
         <input type="password" name="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
       </div>
 
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="submit" class="btn-baloon-main">Submit</button>
     </form>
   </main>
+  <div class="break-content">
+    <div class="break-content-inner">Or, if you have an account</div>
+  </div>
+  <a class="btn-baloon-more" href="/login">Login →</a>
 
 </div>
 
