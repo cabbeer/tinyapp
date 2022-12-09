@@ -13,48 +13,63 @@
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
-      
     />
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="style.css" />
     <title>TinyApp</title>
   </head>
   <body>
-    
     <%- include('partials/_header'); %>
 
     <h3 class="page-title"><span>My URLs</span></h3>
     <main class="pannel">
       <div class="table-wrapper">
-      <table class="table">
-        <thead class="table-head-bold">
-          <tr>
-            <th scope="col">Short URL ID</th>
-            <th scope="col">Long URL</th>
-            <th></th>   
-            <th></th>         
-          </tr>
-        </thead>
-        <tbody>
-          <% for (let id in urls) { %>
+        <table class="table">
+          <thead class="table-head-bold">
             <tr>
-              <td><button data-toggle="tooltip" data-placement="top" title="Tooltip on top" class="tag-simple">/u/<a href="/u/<%= id %>"><%= id %></a></button></td>
-              <td><a class="fancy-link" href="/u/<%= id %>"><%= urls[id].longURL %></a></td>
+              <th scope="col">Short URL ID</th>
+              <th scope="col">Long URL</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (let id in urls) { %>
+            <tr>
               <td>
-                <form action="/urls/<%= id %>">  <button type="submit" class="btn-action-u">Edit</button></form>
+                <button
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  title="Tooltip on top"
+                  class="tag-simple"
+                >
+                  /u/<a href="/u/<%= id %>"><%= id %></a>
+                </button>
               </td>
               <td>
-                <form method="POST" action="/urls/<%= id %>/delete">  <button type="submit" class="btn-action-d">Delete</button></form>
+                <a class="fancy-link" href="/u/<%= id %>"
+                  ><%= urls[id].longURL %></a
+                >
+              </td>
+              <td>
+                <form action="/urls/<%= id %>">
+                  <button type="submit" class="btn-action-u">Edit</button>
+                </form>
+              </td>
+              <td>
+                <form method="POST" action="/urls/<%= id %>/delete">
+                  <button type="submit" class="btn-action-d">Delete</button>
+                </form>
               </td>
             </tr>
-          <% } %>
-        </tbody>
-      </table>
-    </div>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
     </main>
     <script>
       $(function () {
-  $('[data-toggle="tooltip"]').tooltip()
-})
+        $('[data-toggle="tooltip"]').tooltip();
+      });
     </script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"></script>

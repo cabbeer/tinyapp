@@ -14,7 +14,7 @@
       integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link rel="stylesheet" type="text/css" href="/style.css" />
     <title>New URL - TinyApp</title>
   </head>
 
@@ -22,23 +22,23 @@
     <%- include('partials/_header') %>
 
     <h3 class="page-title"><span>Create TinyURL</span></h3>
-    <main  class="pannel">
+    <main class="pannel">
       <div class="pannel-section-main">
-      <form class="form-inline" action="/urls" method="POST">
-        <div class="form-group mb-2">
-          <label for="longURL">Enter a URL:</label>
-          <input
-            class="clean-input"
-            type="text"
-            name="longURL"
-            value="http://"
-            style="width: 300px; margin: 1em"
-          />
-          <a class="btn-pop-light cancel-btn" href="/urls">Cancel</a>
-          <button type="submit" class="btn-pop-light btn-post">Submit</button>
-        </div>
-      </form>
-    </div>
+        <form class="form-inline" action="/urls" method="POST">
+          <div class="form-group mb-2">
+            <label for="longURL">Enter a URL:</label>
+            <input
+              class="clean-input"
+              type="text"
+              name="longURL"
+              value="http://"
+              style="width: 300px; margin: 1em"
+            />
+            <a class="btn-pop-light cancel-btn" href="/urls">Cancel</a>
+            <button type="submit" class="btn-pop-light btn-post">Submit</button>
+          </div>
+        </form>
+      </div>
     </main>
     <!-- Bootstrap JS -->
     <script
