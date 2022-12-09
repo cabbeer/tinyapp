@@ -53,7 +53,12 @@ const {
 
 */
 
-//GET ROUTS BEGIN
+
+/*
+*
+* GET ROUTS BEGIN
+*
+*/
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -83,7 +88,8 @@ app.get("/login", (req, res) => {
 
 app.get("/urls", (req, res) => {
   if (!req.session.user_id) {
-    return res.redirect("/login");
+    return res.status(403).send("Please login to view this page");
+    // return res.redirect("/login");
   }
 
   const templateVars = {
@@ -139,7 +145,12 @@ app.get("/u/:id", (req, res) => {
   res.redirect(longURL);
 });
 
-//POST ROUTS BEGIN
+/*
+*
+* POST ROUTS BEGIN
+*
+*/
+
 app.post("/register", (req, res) => {
   // YOU SHALL NOT PASS ===*
   // Gaurd: Email is empty String
@@ -243,7 +254,7 @@ app.post("/urls/:id", (req, res) => {
     username: users[req.session.user_id],
   };
 
-  res.render("urls_show", templateVars);
+  res.redirect("/urls");
 });
 
 app.post("/urls/:id/delete", (req, res) => {
