@@ -21,7 +21,7 @@ app.use(
 app.use(express.static("views/styles"));
 
 //DB
-// const { users, urlDatabase } = require("./database.js");
+const { users, urlDatabase } = require("./database.js");
 
 //Helper Functions
 const {
@@ -30,8 +30,6 @@ const {
   userEmailLookup,
   checkPassword,
   filterUrlDatabaseByUserID,
-  urlDatabase,
-  users,
 } = require("./helpers.js");
 
 /*
