@@ -1,2 +1,3 @@
 node_modules/
-tinyapp.code-workspace/
+tinyapp.code-workspace
+.DS_Store
