@@ -158,7 +158,6 @@ app.post("/urls", (req, res) => {
 
   // Create new Short URL
   let newUrlId = generateRandomString();
-  //this checks if the randomstring is not in the DB before adding it; but the functionality is not complete, it should generate a new random string and then re-try adding it, but what are the odds that this is actually needed
   if (!urlDatabase[newUrlId]) {
     urlDatabase[newUrlId] = {
       longURL: req.body.longURL,
@@ -233,7 +232,6 @@ app.post("/urls/:id/delete", (req, res) => {
     return res.status(404).send("Sorry, file not found");
   }
 
-  //delete function
   delete urlDatabase[req.params.id];
 
   res.redirect("/urls");

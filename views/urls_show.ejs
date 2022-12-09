@@ -13,9 +13,8 @@
   </head>
 
   <body>
+    
     <%- include('partials/_header'); %>
-
-    <!-- <h3 class="page-title"><span>TinyURL for: <%= longURL %></span></h3> -->
 
     <h3 class="page-title">
       <span
@@ -24,11 +23,6 @@
     </h3>
 
     <main class="pannel">
-      <!-- <div class="pannel-section-small">
-        <p class="card-text">
-          Short URL ID: <a class="fancy-link" href="/u/<%= id %>"><%= id %></a>
-        </p>
-      </div> -->
       <div class="pannel-section-main">
         <div>
           <form class="form-inline" action="/urls/<%= id %>" method="POST">
