@@ -371,6 +371,7 @@ td {
 .btn-exit:hover {
   color: #fff;
   background-color: #616467;
+  text-decoration: none;
 }
 
 /* .btn-add {

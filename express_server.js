@@ -53,13 +53,18 @@ const {
 
 */
 
-
 /*
-*
-* GET ROUTS BEGIN
-*
-*/
+ *
+ * GET ROUTS BEGIN
+ *
+ */
 app.get("/", (req, res) => {
+  if (req.session.user_id) {
+    return res.redirect("/urls");
+  }
+  if (!req.session.user_id) {
+    return res.redirect("/login");
+  }
   res.send("Hello!");
 });
 
@@ -82,7 +87,9 @@ app.get("/login", (req, res) => {
     return res.redirect("/urls");
   }
 
-  const templateVars = {};
+  const templateVars = {
+    username: users[req.session.user_id],
+  };
   res.render("login", templateVars);
 });
 
@@ -119,6 +126,12 @@ app.get("/urls/:id", (req, res) => {
   if (!req.session.user_id) {
     return res.status(403).send("Please login to view this page");
   }
+
+  //short id does not exist
+  if (urlDatabase[req.params.id] === undefined) {
+    return res.status(404).send("Sorry, this short URL does not exist.");
+  }
+
   //Not owner
   if (urlDatabase[req.params.id].userID !== req.session.user_id) {
     return res.status(403).send("Sorry, only the creator can view this page");
@@ -146,10 +159,10 @@ app.get("/u/:id", (req, res) => {
 });
 
 /*
-*
-* POST ROUTS BEGIN
-*
-*/
+ *
+ * POST ROUTS BEGIN
+ *
+ */
 
 app.post("/register", (req, res) => {
   // YOU SHALL NOT PASS ===*
@@ -239,10 +252,6 @@ app.post("/urls/:id", (req, res) => {
   //Not owner
   if (urlDatabase[req.params.id].userID !== req.session.user_id) {
     return res.status(403).send("Sorry, only the creator can edit this page");
-  }
-  // object not found in DB
-  if (!urlDatabase[req.params.id]) {
-    return res.status(404).send("Sorry, file not found");
   }
 
   //edit function

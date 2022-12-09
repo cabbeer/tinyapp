@@ -13,12 +13,13 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      
+    <% if(username){ %>
+      
       <div class="navbar-nav" style="margin-right: auto !important;">
         <a class="btn-pop-light" href="/urls">My URLs</a>
         <a class="btn-pop-bold" href="/urls/new">Create New URL</a>
        </div>
-
-       <% if(username){ %>
 
         <div class="'navbar-nav">
           <form method="POST" action="/logout" for="username" class="d-flex nav-item" role="search">
@@ -29,8 +30,9 @@
 
        <% } else{ %>  
         
-        <div class="navbar-nav">
-          <h1>If you are seeing this that means the server has restarted and all users/ urls have been erased from the <em>DB</em>, please delete cookies and go to the register page to create a new user <br/> <bold>NOTE: This MSG was intentionally left in as a reminder</bold></h1>
+        <div class="navbar-nav" style="position: sticky; left: 82vw;">
+            <a href="/login" class="btn-exit">Login</a>
+            <a href="/register" class="btn-exit">Register</a>
          </div>
         <% } %>
       </div>
