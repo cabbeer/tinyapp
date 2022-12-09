@@ -5,7 +5,7 @@ const PORT = 8080;
 const bcrypt = require("bcryptjs");
 var cookieSession = require("cookie-session");
 
-//Express Settings
+//Express Settings  [note: BCrypt declared in helpers.js file]
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(
@@ -18,12 +18,12 @@ app.use(
     maxAge: 24 * 60 * 60 * 1000,
   })
 );
-// NOTE: BCrypt declared in helpers.js file
-
-//CSS (Static file directory)
 app.use(express.static("views/styles"));
 
-//Helper Functions && URL_DB  && User_DB
+//DB
+// const { users, urlDatabase } = require("./database.js");
+
+//Helper Functions
 const {
   generateRandomString,
   getUserIDbyEmail,
@@ -34,7 +34,28 @@ const {
   users,
 } = require("./helpers.js");
 
-//Routing
+/*
+## Routing Overview
+
+### GET
+    |-> /
+    |-> /register
+    |-> /login
+    |-> /urls
+    |-> /urls/new     
+    |-> /urls/:id
+    |-> /u/:id [short-url > redirect route]
+### POST
+    |-> /register
+    |-> /login
+    |-> /logout
+    |-> /urls [create new short-url]
+    |-> /urls:id [short-url > edit]
+    |-> /urls:id:delete [short-url > delete]
+
+*/
+
+//GET ROUTS BEGIN
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -52,6 +73,75 @@ app.get("/register", (req, res) => {
   res.render("register", templateVars);
 });
 
+app.get("/login", (req, res) => {
+  //userAuthorization
+  if (req.session.user_id) {
+    return res.redirect("/urls");
+  }
+
+  const templateVars = {};
+  res.render("login", templateVars);
+});
+
+app.get("/urls", (req, res) => {
+  if (!req.session.user_id) {
+    return res.redirect("/login");
+  }
+
+  const templateVars = {
+    urls: filterUrlDatabaseByUserID(req.session.user_id),
+    username: users[req.session.user_id],
+  };
+
+  res.render("urls_index", templateVars);
+});
+
+app.get("/urls/new", (req, res) => {
+  //userAuthorization
+  if (!req.session.user_id) {
+    return res.redirect("/login");
+  }
+
+  const templateVars = {
+    username: users[req.session.user_id],
+  };
+
+  res.render("urls_new", templateVars);
+});
+
+app.get("/urls/:id", (req, res) => {
+  //userAuthorization
+  //Not logged in
+  if (!req.session.user_id) {
+    return res.status(403).send("Please login to view this page");
+  }
+  //Not owner
+  if (urlDatabase[req.params.id].userID !== req.session.user_id) {
+    return res.status(403).send("Sorry, only the creator can view this page");
+  }
+
+  const templateVars = {
+    id: req.params.id,
+    longURL: urlDatabase[req.params.id].longURL,
+    username: users[req.session.user_id],
+  };
+  res.render("urls_show", templateVars);
+});
+
+app.get("/u/:id", (req, res) => {
+  if (!urlDatabase[req.params.id]) {
+    return res
+      .status(404)
+      .send(
+        "Our apologies. \n We're unable to find the page you're looking for. - tinyapp"
+      );
+  }
+
+  const longURL = urlDatabase[req.params.id].longURL;
+  res.redirect(longURL);
+});
+
+//POST ROUTS BEGIN
 app.post("/register", (req, res) => {
   // YOU SHALL NOT PASS ===*
   // Gaurd: Email is empty String
@@ -80,16 +170,6 @@ app.post("/register", (req, res) => {
   req.session.user_id = newUserID;
 
   res.redirect("/urls");
-});
-
-app.get("/login", (req, res) => {
-  //userAuthorization
-  if (req.session.user_id) {
-    return res.redirect("/urls");
-  }
-
-  const templateVars = {};
-  res.render("login", templateVars);
 });
 
 app.post("/login", function (req, res) {
@@ -121,33 +201,6 @@ app.post("/logout", function (req, res) {
   next();
 });
 
-app.get("/urls", (req, res) => {
-  if (!req.session.user_id) {
-    return res.redirect("/login");
-  }
-
-  const templateVars = {
-    urls: filterUrlDatabaseByUserID(req.session.user_id),
-    username: users[req.session.user_id],
-  };
-
-  res.render("urls_index", templateVars);
-});
-
-//Create new ShortUrl Route
-app.get("/urls/new", (req, res) => {
-  //userAuthorization
-  if (!req.session.user_id) {
-    return res.redirect("/login");
-  }
-
-  const templateVars = {
-    username: users[req.session.user_id],
-  };
-
-  res.render("urls_new", templateVars);
-});
-
 app.post("/urls", (req, res) => {
   //userAuthorization
   if (!req.session.user_id) {
@@ -168,27 +221,6 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls/" + newUrlId);
 });
 
-//View individual URL object
-app.get("/urls/:id", (req, res) => {
-  //userAuthorization
-  //Not logged in
-  if (!req.session.user_id) {
-    return res.status(403).send("Please login to view this page");
-  }
-  //Not owner
-  if (urlDatabase[req.params.id].userID !== req.session.user_id) {
-    return res.status(403).send("Sorry, only the creator can view this page");
-  }
-
-  const templateVars = {
-    id: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL,
-    username: users[req.session.user_id],
-  };
-  res.render("urls_show", templateVars);
-});
-
-//Edit Route
 app.post("/urls/:id", (req, res) => {
   //userAuthorization
   //Not logged in
@@ -216,7 +248,6 @@ app.post("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-//Delete Route
 app.post("/urls/:id/delete", (req, res) => {
   //userAuthorization
   //Not logged in
@@ -235,20 +266,6 @@ app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
 
   res.redirect("/urls");
-});
-
-//Redirect short-url route
-app.get("/u/:id", (req, res) => {
-  if (!urlDatabase[req.params.id]) {
-    return res
-      .status(404)
-      .send(
-        "Our apologies. \n We're unable to find the page you're looking for. - tinyapp"
-      );
-  }
-
-  const longURL = urlDatabase[req.params.id].longURL;
-  res.redirect(longURL);
 });
 
 app.listen(PORT, () => {

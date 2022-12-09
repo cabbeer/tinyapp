@@ -30,45 +30,9 @@
        <% } else{ %>  
         
         <div class="navbar-nav">
-          <!-- <a href="/login" class="btn btn-outline-primary">Login</a>
-          <a href="/register" class="btn btn-outline-secondary" >Create New User</a> -->
           <h1>If you are seeing this that means the server has restarted and all users/ urls have been erased from the <em>DB</em>, please delete cookies and go to the register page to create a new user <br/> <bold>NOTE: This MSG was intentionally left in as a reminder</bold></h1>
          </div>
-
         <% } %>
-
-<!-- Old Header
-        <% if(username){ %>
-
-          <div class="'navbar-nav">
-            <form method="POST" action="/logout" for="username" class="d-flex nav-item" role="search">
-              <span class="nav-link">Welcome back, <%= username.email %>!</span>
-              <button class="btn btn-light" type="submit">Logout</button>
-            </form>
-            </div>
-        
-          <% } else{ %>  
-        
-            <div class="'navbar-nav">
-              <form method="POST" action="/login" for="username" class="d-flex nav-item" role="search">
-                <input 
-                class="form-control me-2" 
-                type="text" 
-                name="username"
-                placeholder="Username" 
-                aria-label="Search"
-                />
-                <button class="btn btn-primary" type="submit">Login</button>
-              </form>
-            </div>    
-        
-        <% } %>
-
--->
-
-
-
-      
       </div>
     </div>
   </nav>
